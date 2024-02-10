@@ -4,3 +4,4 @@ data/
 obsolete/
 # Ignore all .ipynb files
 RAGChainLangChain.ipynb
+keys.py

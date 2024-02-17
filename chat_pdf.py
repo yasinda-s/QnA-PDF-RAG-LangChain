@@ -4,17 +4,23 @@ from langchain_community.vectorstores import Chroma
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
+from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.llms import HuggingFaceHub
 from langchain.document_loaders import PyPDFLoader
 from langchain_core.prompts import PromptTemplate
+import io
 
 from keys import INFERENCE_API_KEY
 from prompt import TEMPLATE
 
-def load_pdf_text(pdf_doc):
-    loader = PyPDFLoader(pdf_doc)
-    docs = loader.load()
-    return docs
+def load_pdf_text(uploaded_file):
+    if uploaded_file is not None:
+        file_stream = io.BytesIO(uploaded_file.read())
+        loader = PyPDFLoader(file_stream)
+        docs = loader.load()
+        return docs
+    else:
+        st.error("Please upload a PDF file if the correct format.")
 
 def chunk_and_store_in_vector_store(docs):
     embeddings = HuggingFaceInferenceAPIEmbeddings(

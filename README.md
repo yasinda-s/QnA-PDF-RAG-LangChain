@@ -1,6 +1,8 @@
 # QnA-PDF-RAG-LangChain
 Chat with your PDF files and ask the most specific questions about them!
 
+![image](https://github.com/yasinda-s/QnA-PDF-RAG-LangChain/assets/60426941/c7173672-8cc0-4afd-bec0-877d6180f09c)
+
 ## Features
 
 - Upload a PDF and chat with your PDF!
@@ -12,5 +14,5 @@ Chat with your PDF files and ask the most specific questions about them!
 
 ```sh
 pip install -r requirements.txt
-streamlit run chat_pdf.py
+streamlit run streamlit_app.py
 ```

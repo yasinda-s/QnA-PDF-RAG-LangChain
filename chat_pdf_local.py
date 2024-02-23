@@ -11,9 +11,10 @@ from langchain_core.prompts import PromptTemplate
 from keys import INFERENCE_API_KEY
 from prompt import TEMPLATE
 
-def load_pdf_text(pdf_doc):
-    loader = PyPDFLoader(pdf_doc) #TODO - change to dynamic PDF
+def load_pdf_text():
+    loader = PyPDFLoader("data/Eragon_Book.pdf") #TODO - change to dynamic PDF
     docs = loader.load()
+
     doc_length = sum(len(doc.page_content.split()) for doc in docs)    
 
     return docs, doc_length
@@ -79,10 +80,11 @@ def process_user_input(user_query, vectorstore):
     ).assign(answer=rag_chain_from_docs)
 
     llm_response = rag_chain_with_source.invoke(user_query)
-    print("\nLLM Response: \n", llm_response)
+    print(llm_response)
     final_output = substring_after(llm_response['answer'], "Helpful Answer:")
-    print("\nTrimmed LLM Answer", final_output.strip())
-    st.write("Reply: \n", final_output.strip())
+    print(final_output.strip())
+    # st.write("Reply: ", final_output.strip())
+
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
@@ -91,26 +93,12 @@ def substring_after(s, delim):
     return s.partition(delim)[2]
 
 def main():
-    st.set_page_config("Chat-PDF", "📚🤖")
-    st.title("Chat-PDF")
 
-    with st.sidebar:
-        st.title("Menu:")
-        pdf_doc = st.file_uploader("Upload your PDF here", accept_multiple_files=False)
-        if st.button("Process PDF"):
-            with st.spinner("Processing... This may take a while based on the size of the PDF"): 
-
-                docs, doc_length = load_pdf_text()
-                chunk_size, chunk_overlap = determine_optimal_chunk_size(doc_length)
-                vectorstore = chunk_and_store_in_vector_store(docs, chunk_size, chunk_overlap)
-                st.success("PDF Processed")
-
-    user_query = st.text_input("What question would you like to ask your PDF?")
-
-    if user_query is None:
-        st.warning("Please upload a PDF and ask a question")
-    else:
-        process_user_input(user_query, vectorstore)
+    docs, doc_length = load_pdf_text()
+    chunk_size, chunk_overlap = determine_optimal_chunk_size(doc_length)
+    vectorstore = chunk_and_store_in_vector_store(docs, chunk_size, chunk_overlap)
+    user_input = input("What do you want to know? - ")
+    process_user_input(user_input, vectorstore)
 
 if __name__ == "__main__":
     main()

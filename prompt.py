@@ -6,4 +6,4 @@ Use three sentences maximum and keep the answer as concise as possible.
 
 Question: {question}
 
-Helpful Answer:"""
+Answer:"""

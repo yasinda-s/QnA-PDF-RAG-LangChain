@@ -2,3 +2,4 @@ langchain==0.1.9
 lanchain-community==0.0.22
 streamlit==1.29.0
 chromadb
+pypdf

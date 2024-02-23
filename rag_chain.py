@@ -1,4 +1,3 @@
-import streamlit as st
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_core.output_parsers import StrOutputParser
@@ -7,14 +6,22 @@ from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 from langchain_community.llms import HuggingFaceEndpoint
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.prompts import PromptTemplate
+import tempfile
+import shutil
 
 from keys import INFERENCE_API_KEY
 from prompt import TEMPLATE
 
-def load_pdf_text(pdf_doc):
-    loader = PyPDFLoader(pdf_doc) #TODO - change to dynamic PDF
+def load_pdf_text(uploaded_file):
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+        shutil.copyfileobj(uploaded_file, temp_file)
+        temp_file_path = temp_file.name
+
+    loader = PyPDFLoader(temp_file_path)
     docs = loader.load()
-    doc_length = sum(len(doc.page_content.split()) for doc in docs)    
+
+    total_text = "\n".join(doc.page_content for doc in docs)
+    doc_length = len(total_text)  
 
     return docs, doc_length
 
@@ -80,38 +87,13 @@ def process_user_input(user_query, vectorstore):
 
     llm_response = rag_chain_with_source.invoke(user_query)
     print("\nLLM Response: \n", llm_response)
-    final_output = substring_after(llm_response['answer'], "Helpful Answer:")
-    print("\nTrimmed LLM Answer", final_output.strip())
-    st.write("Reply: \n", final_output.strip())
+    final_output = llm_response["answer"].strip()
+    print("\nTrimmed LLM Answer: \n", final_output)
+    return final_output
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 def substring_after(s, delim):
     return s.partition(delim)[2]
-
-def main():
-    st.set_page_config("Chat-PDF", "📚🤖")
-    st.title("Chat-PDF")
-
-    with st.sidebar:
-        st.title("Menu:")
-        pdf_doc = st.file_uploader("Upload your PDF here", accept_multiple_files=False)
-        if st.button("Process PDF"):
-            with st.spinner("Processing... This may take a while based on the size of the PDF"): 
-
-                docs, doc_length = load_pdf_text()
-                chunk_size, chunk_overlap = determine_optimal_chunk_size(doc_length)
-                vectorstore = chunk_and_store_in_vector_store(docs, chunk_size, chunk_overlap)
-                st.success("PDF Processed")
-
-    user_query = st.text_input("What question would you like to ask your PDF?")
-
-    if user_query is None:
-        st.warning("Please upload a PDF and ask a question")
-    else:
-        process_user_input(user_query, vectorstore)
-
-if __name__ == "__main__":
-    main()
 

@@ -27,11 +27,17 @@ def load_pdf_text(uploaded_file):
 
 def determine_optimal_chunk_size(doc_length):
     if doc_length < 5000:  
-        return 500, 100  
+        chunk_size = 500
+        chunk_overlap = 100
+        return chunk_size, chunk_overlap
     elif doc_length < 20000:  
-        return 1000, 250  
-    else:  
-        return 2000, 500
+        chunk_size = 1000
+        chunk_overlap = 250
+        return chunk_size, chunk_overlap
+    else:
+        chunk_size = 2000
+        chunk_overlap = 500
+        return chunk_size, chunk_overlap
     
 # def determine_optimal_chunk_size(doc_length, min_chunk=500, max_chunk=2000, min_overlap=100, max_overlap=500): #This function is better but uses more computational power
 #     min_length = 0

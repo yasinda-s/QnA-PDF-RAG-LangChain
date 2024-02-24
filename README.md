@@ -13,6 +13,8 @@ Chat with your PDF files and ask the most specific questions about them!
 ## How to run
 
 ```sh
+Retrieve a HuggingFace API Key (or any other API Keys based on the models you use: OpenAI, Gemini, etc).
+To get the HuggingFace key, visit https://huggingface.co/settings/tokens.
 pip install -r requirements.txt
 streamlit run streamlit_app.py
 ```

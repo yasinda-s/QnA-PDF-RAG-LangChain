@@ -15,6 +15,11 @@ Chat with your PDF files and ask the most specific questions about them!
 ```sh
 Retrieve a HuggingFace API Key (or any other API Keys based on the models you use: OpenAI, Gemini, etc).
 To get the HuggingFace key, visit https://huggingface.co/settings/tokens.
+
+(If you are creating a new venv) :
+conda create -n rag python=3.10
+conda activate rag
+
 pip install -r requirements.txt
 streamlit run streamlit_app.py
 ```
